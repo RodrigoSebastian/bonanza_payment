@@ -1,0 +1,39 @@
+version: "3"
+
+volumes:
+  postgres_data:
+    driver: local
+  gems:
+    driver: local
+  bundle_path:
+
+services:
+  db:
+    image: postgres
+    ports:
+      # We'll bind our host's port 5432 to postgres's port 5432, so we can use
+      # our database IDEs with it:
+      - 5432:5432
+    volumes:
+      # We'll store the postgres data in the 'postgres_data' volume we defined:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/dumps:/db/dumps:ro # Mount the DB dumps folder
+      - ./bin/restoredb:/bin/restoredb:ro # Mount the 'restoredb' script
+    environment:
+      POSTGRES_PASSWORD: <%= ENV['POSTGRES_PASSWORD'] %>
+
+  app:
+    build: .
+    restart: always
+    command: bash -c "rm -f tmp/pids/server.pid && rails s -p 3000 -b '0.0.0.0'"
+    environment:
+      RAILS_ENV: development
+    volumes:
+      - .:/rails_docker
+      - bundle_path:/bundle
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    env_file:
+      - .env
