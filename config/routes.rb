@@ -7,4 +7,12 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  namespace :v1 do
+   resources :conekta_checkout do
+      collection do
+         post "charge"
+      end
+   end
+  end
 end

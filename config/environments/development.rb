@@ -1,4 +1,5 @@
 require "active_support/core_ext/integer/time"
+require 'conekta'
 
 Rails.application.configure do
   # Configure 'rails notes' to inspect Cucumber files
